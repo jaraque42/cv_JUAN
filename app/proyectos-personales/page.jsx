@@ -40,6 +40,55 @@ export default function ProyectosPersonalesPage() {
     },
   ];
 
+  const dockerApps = [
+    {
+      name: "APP-HELPDESK-IT-PMRMAD",
+      summary: "Helpdesk IT con frontend SPA + backend API + base de datos, orquestado con Docker Compose.",
+      stack: ["PostgreSQL 15", "Backend: Flask + Gunicorn", "Frontend: React (Vite) + Nginx"],
+      services: [
+        "db: postgres:15-alpine (volumen `postgres_data`)",
+        "backend: build `./backend` (puerto host 5050 → contenedor 5000)",
+        "frontend: build `./frontend` (puerto host 5002 → contenedor 80)",
+      ],
+      persistence: ["postgres_data (BD)", "uploads_data (ficheros subidos)"],
+      run: "docker compose up -d --build",
+      notes: [
+        "La API usa `DATABASE_URL` apuntando al servicio `db` dentro de la red del compose.",
+        "El Nginx del frontend hace proxy de `/api` hacia `backend:5000`.",
+      ],
+    },
+    {
+      name: "APP-IT-PMR",
+      summary: "App minimal en Flask para gestionar recepciones/entregas/incidencias de móviles.",
+      stack: ["PostgreSQL 14", "Flask + Gunicorn", "Flask-Migrate (upgrade al arranque)"],
+      services: [
+        "db: postgres:14 (volumen `db-data`)",
+        "web: build `.` (puerto host 8000 → contenedor 8000)",
+      ],
+      persistence: ["db-data (BD)"],
+      run: "docker compose up -d --build",
+      notes: [
+        "`entrypoint.sh` espera a PostgreSQL, inicializa DB y aplica migraciones (`flask db upgrade`).",
+      ],
+    },
+    {
+      name: "PROYECTO-TURNOS",
+      summary: "Sistema de gestión de turnos con API (docs) y frontend, montado en 3 contenedores.",
+      stack: ["PostgreSQL 15", "Backend: FastAPI + Uvicorn", "Frontend: Vite + Nginx"],
+      services: [
+        "db: postgres:15 (volumen `postgres_data`, sin exponer 5432 al host)",
+        "backend: build `./backend` (puerto host 8081 → contenedor 8081)",
+        "frontend: build `./frontend` (puerto host 3000 → contenedor 80)",
+      ],
+      persistence: ["postgres_data (BD)"],
+      run: "docker compose up --build",
+      notes: [
+        "El `db` tiene healthcheck y el backend espera a que esté healthy antes de arrancar.",
+        "API: `http://localhost:8081` y docs: `http://localhost:8081/docs`.",
+      ],
+    },
+  ];
+
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <div className="max-w-5xl mx-auto px-4 sm:px-8 py-14 space-y-10">
@@ -75,6 +124,15 @@ export default function ProyectosPersonalesPage() {
             Nota: si alguna vista previa no carga, es por restricciones del propio sitio (bloqueo de iframes). En ese
             caso, abre el enlace.
           </p>
+        </motion.section>
+
+        <motion.section initial="hidden" animate="visible" variants={fadeUp} className="space-y-4">
+          <p className="section-title">Aplicaciones Locales En Docker y Docker-Compose</p>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {dockerApps.map((app) => (
+              <DockerAppCard key={app.name} app={app} />
+            ))}
+          </div>
         </motion.section>
       </div>
     </main>
@@ -163,6 +221,86 @@ function ProjectCard({ project }) {
           <span style={{ color: "var(--text)" }}>Base de datos:</span> {project.database}
         </p>
       </div>
+    </div>
+  );
+}
+
+function DockerAppCard({ app }) {
+  return (
+    <div className="card space-y-4">
+      <div className="space-y-2">
+        <h2 className="text-lg font-extrabold" style={{ fontFamily: "Syne, sans-serif" }}>
+          {app.name}
+        </h2>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+          {app.summary}
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-semibold" style={{ color: "var(--text)" }}>
+          Stack
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {app.stack.map((t) => (
+            <span
+              key={t}
+              className="text-xs px-2 py-1 rounded-md"
+              style={{
+                background: "rgba(0,229,180,0.08)",
+                color: "var(--teal-start)",
+                border: "1px solid rgba(0,229,180,0.2)",
+              }}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-semibold" style={{ color: "var(--text)" }}>
+          Servicios (Compose)
+        </p>
+        <ul className="space-y-1">
+          {app.services.map((s) => (
+            <li key={s} className="text-xs" style={{ color: "var(--text-muted)" }}>
+              {s}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-semibold" style={{ color: "var(--text)" }}>
+          Persistencia
+        </p>
+        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+          {app.persistence.join(" · ")}
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-semibold" style={{ color: "var(--text)" }}>
+          Arranque
+        </p>
+        <code
+          className="block text-xs px-3 py-2 rounded-lg"
+          style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)" }}
+        >
+          {app.run}
+        </code>
+      </div>
+
+      {app.notes?.length ? (
+        <div className="space-y-1">
+          {app.notes.map((n) => (
+            <p key={n} className="text-xs" style={{ color: "var(--text-muted)" }}>
+              {n}
+            </p>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
