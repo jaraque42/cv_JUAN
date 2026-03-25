@@ -21,19 +21,39 @@ export const skillGroups = [
     category: "Hardware",
     icon: "🔧",
     slug: "hardware",
-    skills: ["Diagnóstico y reparación", "Cableado estructurado", "Portátiles y sobremesas"],
+    skills: [
+      "Portátiles y sobremesas",
+      "Routers y Switches",
+      "Firewalls",
+      "Cableado estructurado",
+      "Diagnóstico y reparación",
+    ],
   },
   {
     category: "Software",
     icon: "💼",
     slug: "software",
-    skills: ["Microsoft Office", "Excel", "Virtualización"],
+    skills: [
+      "Virtualización",
+      "Docker & Docker Compose",
+      "Instalación de software",
+      "Control de versiones",
+      "Entornos de desarrollo",
+      "Microsoft Office",
+      "Excel",
+    ],
   },
   {
     category: "Nuevas Tecnologías",
     icon: "🤖",
     slug: "nuevas-tecnologias",
-    skills: ["Big Data (nociones)", "IA (nociones)", "Web Development"],
+    skills: [
+      "Web Development & AI Design",
+      "IA & Modelos Generativos (LLMs)",
+      "Web Development & Multimedia IA",
+      "Big Data & Análisis",
+      "Web Development",
+    ],
   },
 ];
 

@@ -3,14 +3,22 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { skillGroups } from "./skillsData";
+import { useMemo, useState } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
-export default function SkillGroupPage({ slug, titleOverride }) {
+export default function SkillGroupPage({
+  slug,
+  titleOverride,
+  detailSections,
+  detailTriggerSkill,
+  detailsBySkill,
+}) {
   const group = skillGroups.find((g) => g.slug === slug);
+  const [selectedSkill, setSelectedSkill] = useState(null);
 
   if (!group) {
     return (
@@ -31,6 +39,16 @@ export default function SkillGroupPage({ slug, titleOverride }) {
   }
 
   const title = titleOverride ?? group.category;
+  const activeDetailSections = useMemo(() => {
+    if (detailsBySkill && selectedSkill && Array.isArray(detailsBySkill[selectedSkill])) {
+      return detailsBySkill[selectedSkill];
+    }
+    if (!Array.isArray(detailSections) || !detailSections.length) return [];
+    if (!detailTriggerSkill) return detailSections;
+    return selectedSkill === detailTriggerSkill ? detailSections : [];
+  }, [detailsBySkill, selectedSkill, detailSections, detailTriggerSkill]);
+
+  const showDetails = activeDetailSections.length > 0;
 
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
@@ -64,21 +82,65 @@ export default function SkillGroupPage({ slug, titleOverride }) {
 
         <motion.section initial="hidden" animate="visible" variants={fadeUp} className="space-y-4">
           <p className="section-title">Stack</p>
+          {detailsBySkill || detailTriggerSkill ? (
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+              Pulsa una tecnología para ver el detalle.
+            </p>
+          ) : null}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {group.skills.map((skill) => (
-              <div key={skill} className="card">
+              <button
+                key={skill}
+                type="button"
+                onClick={() =>
+                  setSelectedSkill((prev) => (prev === skill ? null : skill))
+                }
+                aria-pressed={selectedSkill === skill}
+                className="card text-left"
+                style={{
+                  outline: "none",
+                  boxShadow:
+                    selectedSkill === skill ? "0 0 0 1px rgba(0,229,180,0.55), 0 0 26px var(--glow)" : undefined,
+                }}
+              >
                 <p className="font-semibold" style={{ fontFamily: "Syne, sans-serif" }}>
                   {skill}
                 </p>
                 <p className="text-sm mt-2" style={{ color: "var(--text-muted)" }}>
                   Experiencia en instalación, configuración, soporte y mantenimiento.
                 </p>
-              </div>
+              </button>
             ))}
           </div>
         </motion.section>
+
+        {showDetails ? (
+          <motion.section initial="hidden" animate="visible" variants={fadeUp} className="space-y-4">
+            <p className="section-title">Detalle</p>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {activeDetailSections.map((section) => (
+                <div key={section.title} className="card">
+                  <h2 className="text-base font-extrabold mb-3" style={{ fontFamily: "Syne, sans-serif" }}>
+                    {section.title}
+                  </h2>
+                  <ul className="space-y-2">
+                    {section.items.map((item) => (
+                      <li
+                        key={item}
+                        className="flex items-start gap-3 text-sm"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        <span className="hex-dot mt-1.5 flex-shrink-0" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </motion.section>
+        ) : null}
       </div>
     </main>
   );
 }
-
