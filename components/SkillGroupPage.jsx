@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { skillGroups } from "./skillsData";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -19,6 +19,7 @@ export default function SkillGroupPage({
 }) {
   const group = skillGroups.find((g) => g.slug === slug);
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const detailsRef = useRef(null);
 
   if (!group) {
     return (
@@ -49,6 +50,23 @@ export default function SkillGroupPage({
   }, [detailsBySkill, selectedSkill, detailSections, detailTriggerSkill]);
 
   const showDetails = activeDetailSections.length > 0;
+
+  useEffect(() => {
+    if (!showDetails) return;
+    if (typeof window === "undefined") return;
+
+    const isMobile = window.matchMedia?.("(max-width: 639px)")?.matches ?? window.innerWidth < 640;
+    if (!isMobile) return;
+
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    const behavior = prefersReducedMotion ? "auto" : "smooth";
+
+    const id = window.setTimeout(() => {
+      detailsRef.current?.scrollIntoView({ behavior, block: "start" });
+    }, 0);
+
+    return () => window.clearTimeout(id);
+  }, [showDetails, selectedSkill]);
 
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
@@ -115,7 +133,14 @@ export default function SkillGroupPage({
         </motion.section>
 
         {showDetails ? (
-          <motion.section initial="hidden" animate="visible" variants={fadeUp} className="space-y-4">
+          <motion.section
+            ref={detailsRef}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            className="space-y-4"
+            style={{ scrollMarginTop: 110 }}
+          >
             <p className="section-title">Detalle</p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {activeDetailSections.map((section) => (

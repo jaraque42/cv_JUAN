@@ -1,5 +1,6 @@
 import { ThemeProvider } from "next-themes";
 import ThemeToggle from "../components/ThemeToggle";
+import CookieBanner from "../components/CookieBanner";
 import "./globals.css";
 
 export const metadata = {
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
           />
           <ThemeToggle />
           {children}
+          <CookieBanner />
         </ThemeProvider>
       </body>
     </html>
