@@ -7,6 +7,10 @@ export const metadata = {
   title: "Juan Araque Romero | Técnico de Sistemas",
   description:
     "Técnico en Sistemas Informáticos con más de 10 años de experiencia en soporte, mantenimiento y administración de infraestructuras TI.",
+  icons: {
+    icon: "/images/logo-emblem.png",
+    apple: "/images/logo-emblem.png",
+  },
   openGraph: {
     title: "Juan Araque Romero | Técnico de Sistemas",
     description: "Portfolio y CV online de Juan Araque Romero.",
