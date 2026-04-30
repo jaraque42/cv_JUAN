@@ -183,7 +183,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            <ContactChip icon="📞" label="676 908 947" href="tel:+34676908947" />
+
             <ContactChip
               icon="✉️"
               label="araqueromerojuan@gmail.com"

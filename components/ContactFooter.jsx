@@ -1,9 +1,7 @@
 "use client";
 
 export default function ContactFooter() {
-  const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "34676908947";
-  const message = encodeURIComponent("Hola Juan, me gustaría consultarte sobre una oportunidad profesional.");
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+
 
   return (
     <footer
@@ -36,16 +34,7 @@ export default function ContactFooter() {
           Disponible para nuevas oportunidades profesionales.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
-          <a
-            href="tel:+34676908947"
-            className="px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105"
-            style={{
-              background: "linear-gradient(135deg, var(--teal-start), var(--teal-end))",
-              color: "#0a0f1a",
-            }}
-          >
-            📞 676 908 947
-          </a>
+
           <a
             href="mailto:araqueromerojuan@gmail.com"
             className="px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105"
@@ -57,20 +46,7 @@ export default function ContactFooter() {
           >
             ✉️ araqueromerojuan@gmail.com
           </a>
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 hover:scale-105"
-            style={{
-              background: "rgba(37, 211, 102, 0.14)",
-              border: "1px solid rgba(37, 211, 102, 0.35)",
-              color: "#25D366",
-            }}
-            aria-label="Contactar por WhatsApp"
-          >
-            WhatsApp
-          </a>
+
         </div>
 
         <div className="mt-5 flex flex-wrap gap-3 justify-center">
